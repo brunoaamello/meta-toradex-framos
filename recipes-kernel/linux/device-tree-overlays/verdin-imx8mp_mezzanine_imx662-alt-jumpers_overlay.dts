@@ -1,0 +1,83 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+// Note: Uses the same Verdin GPIO2 as used for the Atmel MXT Touchscreen
+//       and the same I2C bus as used for DSI display adapters!
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/clock/imx8mp-clock.h>
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	compatible = "toradex,verdin-imx8mp";
+};
+
+&cameradev {
+	status = "okay";
+};
+
+&isi_0 {
+	status = "disabled";
+};
+
+&isi_1 {
+	status = "disabled";
+};
+
+&isp_1 {
+	status = "okay";
+};
+
+&dewarp {
+	status = "okay";
+};
+
+
+/* Verdin I2C_2_DSI (JP3 2-3, JP4 2-3) */
+&i2c2 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+    imx662_1: imx662_mipi@1a {
+		compatible = "framos,imx662";
+		reg = <0x1a>;
+		pinctrl-names = "default";
+		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO2>;
+		clock-names = "csi_mclk";
+		csi_id = <1>;
+        /* Verdin GPIO1 (JP5 1-2) */
+		rst-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
+		mipi_csi;
+		status = "okay";
+
+		port {
+			imx662_mipi_1_ep: endpoint {
+				remote-endpoint = <&mipi_csi1_ep>;
+				data-lanes = <1 2 3 4>;
+				clock-lanes = <0>;
+				max-pixel-frequency = /bits/ 64 <500000000>;
+			};
+		};
+	}; 
+};
+
+
+&mipi_csi_1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	port@1 {
+		reg = <1>;
+
+		mipi_csi1_ep: endpoint {
+			csis-hs-settle = <13>;
+			csis-clk-settle = <2>;
+			csis-wclk;
+			data-lanes = <4>;
+			remote-endpoint = <&imx662_mipi_1_ep>;
+		};
+	};
+};

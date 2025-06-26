@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/device-tree-overlays:"
 SRC_URI:append = "  file://verdin-imx8mp_imx662_overlay.dts \
                     file://verdin-imx8mp_imx676_overlay.dts \
                     file://verdin-imx8mp_imx678_overlay.dts \
+                    file://verdin-imx8mp_mezzanine_imx662-alt-jumpers_overlay.dts \
                  "
 
 do_collect_overlays:prepend () {
